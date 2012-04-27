@@ -8,10 +8,12 @@ from optparse import OptionParser
 
 if __name__ == '__main__':
  
-    parser = OptionParser("usage: %prog [options]")
+    parser = OptionParser("Generate a yum repository with fake packages and errata\n\n%prog [options]")
     parser.add_option('--numpackages',  dest='numpackages',  type="int", default=5)
-    parser.add_option('--multiversion',  dest='multiversion',  action="store_true", default=False)
-    parser.add_option('--outputdir',  dest='outputdir',  type="str", default='/var/tmp/generated-repo')
+    parser.add_option('--multiversion',  dest='multiversion',  
+                        help="generate 0-3 random new versions of each package and errata",
+                        action="store_true", default=False)
+    parser.add_option('--outputdir',  dest='outputdir', type="str", default='/var/tmp/generated-repo')
     (options, args) = parser.parse_args(sys.argv[1:])
 
     outputdir = options.outputdir
@@ -67,6 +69,6 @@ if __name__ == '__main__':
     os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (outputdir,outputdir))
     print "\n\n\n"
     print "==========================================================="
-    print "Your new fake repo is available at: %outputdir\n" % outputdir
+    print "Your new fake repo is available at: %s\n" % outputdir
     
     
