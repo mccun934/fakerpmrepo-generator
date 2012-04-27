@@ -1,14 +1,30 @@
 #!/usr/bin/python
 
+import subprocess
 import sys
 import optparse
 import random
 import os
 from optparse import OptionParser
 
+def shell_exec(command):
+    print "Executing: $ %s" % command
+    process = subprocess.Popen(command, stderr = subprocess.PIPE, stdout = subprocess.PIPE, shell = True)
+    output = process.communicate()
+    stdout = output[0]
+    stderr = output[1]
+    if process.returncode != 0:
+        print "STDOUT: %s" % stdout
+        print "STDERROR: %s" % stderr
+        exit(process.returncode)
+    
+
+
 if __name__ == '__main__':
  
     parser = OptionParser("Generate a yum repository with fake packages and errata\n\n%prog [options]")
+    parser.add_option('--maxpackagesize',  dest='maxpackagesize', 
+                      help='maximum size in KB for created packages', type="int", default=100)
     parser.add_option('--numpackages',  dest='numpackages',  type="int", default=5)
     parser.add_option('--multiversion',  dest='multiversion',  
                         help="generate 0-3 random new versions of each package and errata",
@@ -33,9 +49,9 @@ if __name__ == '__main__':
         version = "%s.%s.%s" % (str(first_rev),
                               str(middle_rev),
                               str(last_rev))
-        size = str(random.randint(0,1000))
+        size = str(random.randint(0,options.maxpackagesize))
         # print "./generate-package.bash %s %s %s" % (name, version, size)
-        os.system("./generate-package.bash %s %s %s" % (name, version, size))
+        shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
         if (options.multiversion):
             
             et = open('./errata-template.xml')
@@ -47,10 +63,10 @@ if __name__ == '__main__':
                                       str(middle_rev),
                                       str(last_rev))
                 #print "    ./generate-package.bash %s %s %s" % (name, version, size)
-                os.system("./generate-package.bash %s %s %s" % (name, version, size))
+                shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
                 # Generate some errata
                 errata = errata_template
-                errata = errata.replace("%%ERRATAID%%",('RHEA-2012:000%s' % i))
+                errata = errata.replace("%%ERRATAID%%",('RHEA-2012:%s' % random.randint(1,10000)))
                 errata = errata.replace("%%REL%%", str(last_rev))                
                 errata = errata.replace("%%NAME%%", name)
                 errata = errata.replace("%%VER%%", version)
