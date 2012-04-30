@@ -24,14 +24,13 @@ mkdir -p $SOURCES
 cat specfile-template.ini | sed 's/%%NAME%%/'$NAME'/g' | sed 's/%%VERSION%%/'$VER'/g' > $NAME-scratch/$NAME.spec
 echo "Dummy text file for $NAME" > $SOURCES/$NAME-test-file.txt
 dd if=/dev/urandom of=$SOURCES/$NAME-dummy-data.dat bs=1k count=$SIZE
-
+cat binary-template.ini | sed 's/%%NAME%%/'$NAME'/g' | sed 's/%%VERSION%%/'$VER'/g' > $SOURCES/$NAME
+chmod +x $SOURCES/$NAME
 
 mv $NAME-scratch/$NAME.spec ~/rpmbuild/SPECS
 cd $NAME-scratch/
 tar czvf $NAME-$VER.tar.gz *
 mv $NAME-$VER.tar.gz ~/rpmbuild/SOURCES/
-# mv $NAME-scratch/$NAME-dummy-data.dat ~/rpmbuild/SOURCES/
-# mv $NAME-scratch/$NAME-test-file.txt ~/rpmbuild/SOURCES/
 cd ~/rpmbuild/SPECS
 rpmbuild -bb $NAME.spec
 popd 

@@ -85,6 +85,7 @@ if __name__ == '__main__':
     os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (outputdir,outputdir))
     print "\n\n\n"
     print "==========================================================="
-    print "Your new fake repo is available at: %s\n" % outputdir
+    print "Your new fake repo is available at: %s" % outputdir
+    print "You may want to clean out your ~rpmbuild dir as well.\n"
     
     
