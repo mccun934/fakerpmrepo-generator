@@ -3,6 +3,24 @@ fakerpmrepo-generator
 
 Creates a set of RPM packages between 1-1000KB in size with random names and versions read in from /usr/share/dict/words
 
+Each package installs the following files:
+
+/etc/<name>-test-file.txt
+/var/lib/<name>-dummy-data.dat
+/usr/sbin/<name> executable script, eg:
+
+for package rexline-5.7.9-1.elfake.noarch.rpm you get:
+
+$ rexline
+====================================
+
+rexline version 5.7.9
+
+Thank you for installing [rexline]
+
+====================================
+
+
 Run the top level script:
 
 $ ./generate-repo.py --numpackages=10
