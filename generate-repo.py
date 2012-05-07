@@ -72,6 +72,10 @@ if __name__ == '__main__':
                 errata = errata.replace("%%VER%%", version)
                 all_errata += errata
                 
+                
+    # Generate one specific package name you know is always there:
+    shell_exec("./generate-package.bash acme-package 1.0.1 1")
+    
     #bad string concats but I'm lazy                
     all_errata = "<?xml version=\"1.0\"?>\n<updates>" + all_errata 
     all_errata = all_errata + "</updates>\n"
