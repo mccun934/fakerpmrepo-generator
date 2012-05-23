@@ -7,6 +7,16 @@ import random
 import os
 from optparse import OptionParser
 
+def generate_errata(template, last_rev, name, version):
+    errata = template
+    errata = errata.replace("%%ERRATAID%%",('RHEA-2012:%s' % random.randint(1,10000)))
+    errata = errata.replace("%%REL%%", str(last_rev))                
+    errata = errata.replace("%%NAME%%", name)
+    errata = errata.replace("%%VER%%", version)
+    return errata
+  
+  
+
 def shell_exec(command):
     print "Executing: $ %s" % command
     process = subprocess.Popen(command, stderr = subprocess.PIPE, stdout = subprocess.PIPE, shell = True)
@@ -41,6 +51,8 @@ if __name__ == '__main__':
     version_numbers = range(10)
     packages = options.numpackages
     all_errata = ""
+    et = open('./errata-template.xml')
+    errata_template = et.read()
     for i in range(packages):
         name = random.choice(lines).rstrip()
         first_rev = random.randint(0,10)
@@ -54,8 +66,6 @@ if __name__ == '__main__':
         shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
         if (options.multiversion):
             
-            et = open('./errata-template.xml')
-            errata_template = et.read()
             # Generate 0-3 newer versions of the package
             for j in range(random.randint(0,3)):
                 last_rev = last_rev + 1
@@ -65,21 +75,21 @@ if __name__ == '__main__':
                 #print "    ./generate-package.bash %s %s %s" % (name, version, size)
                 shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
                 # Generate some errata
-                errata = errata_template
-                errata = errata.replace("%%ERRATAID%%",('RHEA-2012:%s' % random.randint(1,10000)))
-                errata = errata.replace("%%REL%%", str(last_rev))                
-                errata = errata.replace("%%NAME%%", name)
-                errata = errata.replace("%%VER%%", version)
-                all_errata += errata
+                all_errata += generate_errata(errata_template, last_rev, name, version)
                 
-                
-    # Generate one specific package name you know is always there:
+    # Generate one specific package name you know is always there with multiple revs
     shell_exec("./generate-package.bash acme-package 1.0.1 1")
+    shell_exec("./generate-package.bash acme-package 1.0.2 1")
+    all_errata += generate_errata(errata_template, "1.0.1 ", "acme-package", "1.0.2")
+    shell_exec("./generate-package.bash acme-package 1.1.2 1")
+    all_errata += generate_errata(errata_template, "1.0.2 ", "acme-package", "1.1.2")
+    
     
     #bad string concats but I'm lazy                
     all_errata = "<?xml version=\"1.0\"?>\n<updates>" + all_errata 
     all_errata = all_errata + "</updates>\n"
     errata_xml = open('%s/updateinfo.xml' % outputdir, 'w')
+    print all_errata        
     errata_xml.write(all_errata)
 
     
