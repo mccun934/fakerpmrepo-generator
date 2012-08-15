@@ -3,6 +3,8 @@ fakerpmrepo-generator
 
 Creates a set of RPM packages between 1-1000KB in size with random names and versions read in from /usr/share/dict/words
 
+An example can be found at: http://mmccune.fedorapeople.org/random/
+
 Each package installs the following files:
 
 /etc/<name>-test-file.txt
