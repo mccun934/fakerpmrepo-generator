@@ -86,49 +86,31 @@ def uniquefy_package(package_names, max_size):
     return (package_name, version, size)
 
 
-def generate_repo():
+def generate_repo(output, number, size, multiples):
     """
     """
-    pass
-
-
-if __name__ == '__main__':
- 
-    parser = OptionParser("Generate a yum repository with fake packages and errata\n\n%prog [options]")
-    parser.add_option('--maxpackagesize',  dest='maxpackagesize', 
-                      help='maximum size in KB for created packages', type="int", default=100)
-    parser.add_option('--numpackages',  dest='numpackages',  type="int", default=5)
-    parser.add_option('--multiversion',  dest='multiversion',  
-                        help="generate 0-3 random new versions of each package and errata",
-                        action="store_true", default=False)
-    parser.add_option('--outputdir',  dest='outputdir', type="str", default='/var/tmp/generated-repo')
-    (options, args) = parser.parse_args(sys.argv[1:])
-
-    outputdir = options.outputdir
-    total_packages = options.numpackages
-    max_size = options.maxpackagesize
-
-    cleanup_directory(os.path.expanduser(outputdir))
+    cleanup_directory(os.path.expanduser(output))
 
     # List of names for our packages
     package_names = read_dictionary()
-
 
     all_errata = ""
 
     errata_template = read_template("errata-template.xml")
 
-    for package in range(total_packages):
-        (package_name, version, size) = uniquefy_package(package_names, max_size)
-        shell_exec("./generate-package.bash %s %s %s" % (package_name, version, size))
+    for package in range(number):
+        (package_name, version, package_size) = uniquefy_package(package_names, size)
+        shell_exec("./generate-package.bash %s %s %s" % (package_name, version, package_size))
 
-        if (options.multiversion):
-            
+        if multiples:
+            # Counter to increment revision version
+            last_rev = int(version[-1])
             # Generate 0-3 newer versions of the package
             for j in range(random.randint(0,3)):
 
-                last_rev = int(version[-1]) + j
-                shell_exec("./generate-package.bash %s %s %s" % (package_name, version, size))
+                last_rev += 1
+                new_version = version[:-1] + str(last_rev)
+                shell_exec("./generate-package.bash %s %s %s" % (package_name, new_version, package_size))
                 # Generate some errata
                 all_errata += generate_errata(errata_template, last_rev, package_name, version)
                 
@@ -143,7 +125,7 @@ if __name__ == '__main__':
     #bad string concats but I'm lazy                
     all_errata = "<?xml version=\"1.0\"?>\n<updates>" + all_errata 
     all_errata = all_errata + "</updates>\n"
-    updatedinfo = os.path.expanduser(os.path.join(outputdir, "updateinfo.xml"))
+    updatedinfo = os.path.expanduser(os.path.join(output, "updateinfo.xml"))
     try:
         errata_xml = open(updatedinfo, 'w')
         errata_xml.write(all_errata)
@@ -153,12 +135,37 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    os.system("mv ~/rpmbuild/RPMS/noarch/*elfake* %s" % outputdir)
-    os.system("createrepo %s" % outputdir)
-    os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (outputdir,outputdir))
+    os.system("mv ~/rpmbuild/RPMS/noarch/*elfake* %s" % output)
+    os.system("createrepo %s" % output)
+    os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (output,output))
     print "\n\n\n"
     print "==========================================================="
-    print "Your new fake repo is available at: %s" % outputdir
+    print "Your new fake repo is available at: %s" % output
     print "You may want to clean out your ~rpmbuild dir as well.\n"
-    
-    
+
+
+if __name__ == '__main__':
+
+    description = "Generate a yum repository with fake packages and errata."
+
+    usage = "Usage: %prog [[OUTPUT] [NUMBER] [MULTIPLES] [SIZE]]"
+    epilog = "Constructive comments and feedback can be sent to omaciel at ogmaciel dot com."
+    version = "%prog version 0.1"
+
+    parser = OptionParser(usage=usage, description=description, epilog=epilog, version=version)
+    parser.add_option('-s', '--size',  dest='size', 
+        help='maximum size in KB for created packages', type=int, default=100)
+    parser.add_option('-n', '--number',  dest='number',  type=int, default=5)
+    parser.add_option('-m', '--multiples',  dest='multiples',  
+        help="generate 0-3 random new versions of each package and errata",
+        action="store_true", default=False)
+    parser.add_option('-o', '--output',  dest='output', type="str", default='/var/tmp/generated-repo')
+
+    (options, args) = parser.parse_args()
+
+    output = options.output
+    number = options.number
+    size = options.size
+    multiples = options.multiples
+
+    generate_repo(output, number, size, multiples)
