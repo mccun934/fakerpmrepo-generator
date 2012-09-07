@@ -5,6 +5,7 @@ import sys
 import optparse
 import random
 import os
+import shutil
 from optparse import OptionParser
 
 def generate_errata(template, last_rev, name, version):
@@ -27,7 +28,68 @@ def shell_exec(command):
         print "STDOUT: %s" % stdout
         print "STDERROR: %s" % stderr
         exit(process.returncode)
-    
+
+
+def read_dictionary(wordsfile='words'):
+    """
+    Reads a plain text file of names, one per line, which will be used
+    to generate the names of RPMs.
+    """
+    try:
+        fd = open(wordsfile)
+        wordslist = [word.replace(" ", "").strip() for word in fd.readlines()]
+        fd.close()
+    except Exception, e:
+        print "Was not able to open the words file %s: %s" % (wordsfile, str(e))
+        sys.exit(-1)
+
+    return wordslist
+
+
+def cleanup_directory(outputdir):
+    """
+    Make sure we have a clean slate.
+    """
+
+    if os.path.isdir(outputdir):
+        shutil.rmtree(outputdir)
+    os.mkdir(outputdir)
+
+
+def read_template(template_path):
+    """
+    Returns 
+    """
+
+    try:
+        fd = open(template_path, "r")
+        template = fd.read()
+        fd.close()
+    except Exception, e:
+        print "Was not able to open errata template file: %s" % str(e)
+        sys.exit(-1)
+
+    return template
+
+
+def uniquefy_package(package_names, max_size):
+    """
+    Returns a random and unique package name and version.
+    """
+    package_name = random.choice(package_names).rstrip()
+    first_rev = str(random.randint(0,10))
+    middle_rev = str(random.randint(0,10))
+    last_rev = str(random.randint(0,10))
+    version = "%s.%s.%s" % (first_rev, middle_rev, last_rev)
+    size = str(random.randint(0, max_size))
+
+    return (package_name, version, size)
+
+
+def generate_repo():
+    """
+    """
+    pass
 
 
 if __name__ == '__main__':
@@ -43,39 +105,32 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args(sys.argv[1:])
 
     outputdir = options.outputdir
-    os.system("rm -rf %s" % outputdir)
-    os.system("mkdir %s" % outputdir)
+    total_packages = options.numpackages
+    max_size = options.maxpackagesize
 
-    file = open('/usr/share/dict/words')
-    lines = file.readlines()
-    version_numbers = range(10)
-    packages = options.numpackages
+    cleanup_directory(os.path.expanduser(outputdir))
+
+    # List of names for our packages
+    package_names = read_dictionary()
+
+
     all_errata = ""
-    et = open('./errata-template.xml')
-    errata_template = et.read()
-    for i in range(packages):
-        name = random.choice(lines).rstrip()
-        first_rev = random.randint(0,10)
-        middle_rev = random.randint(0,10)
-        last_rev = random.randint(0,10)
-        version = "%s.%s.%s" % (str(first_rev),
-                              str(middle_rev),
-                              str(last_rev))
-        size = str(random.randint(0,options.maxpackagesize))
-        # print "./generate-package.bash %s %s %s" % (name, version, size)
-        shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
+
+    errata_template = read_template("errata-template.xml")
+
+    for package in range(total_packages):
+        (package_name, version, size) = uniquefy_package(package_names, max_size)
+        shell_exec("./generate-package.bash %s %s %s" % (package_name, version, size))
+
         if (options.multiversion):
             
             # Generate 0-3 newer versions of the package
             for j in range(random.randint(0,3)):
-                last_rev = last_rev + 1
-                version = "%s.%s.%s" % (str(first_rev),
-                                      str(middle_rev),
-                                      str(last_rev))
-                #print "    ./generate-package.bash %s %s %s" % (name, version, size)
-                shell_exec("./generate-package.bash %s %s %s" % (name, version, size))
+
+                last_rev = int(version[-1]) + j
+                shell_exec("./generate-package.bash %s %s %s" % (package_name, version, size))
                 # Generate some errata
-                all_errata += generate_errata(errata_template, last_rev, name, version)
+                all_errata += generate_errata(errata_template, last_rev, package_name, version)
                 
     # Generate one specific package name you know is always there with multiple revs
     shell_exec("./generate-package.bash acme-package 1.0.1 1")
@@ -88,11 +143,15 @@ if __name__ == '__main__':
     #bad string concats but I'm lazy                
     all_errata = "<?xml version=\"1.0\"?>\n<updates>" + all_errata 
     all_errata = all_errata + "</updates>\n"
-    errata_xml = open('%s/updateinfo.xml' % outputdir, 'w')
-    print all_errata        
-    errata_xml.write(all_errata)
+    updatedinfo = os.path.expanduser(os.path.join(outputdir, "updateinfo.xml"))
+    try:
+        errata_xml = open(updatedinfo, 'w')
+        errata_xml.write(all_errata)
+        errata_xml.close()
+    except Exception, e:
+        print "Could not save the errata file! %s" % str(e)
+        sys.exit(-1)
 
-    
 
     os.system("mv ~/rpmbuild/RPMS/noarch/*elfake* %s" % outputdir)
     os.system("createrepo %s" % outputdir)
