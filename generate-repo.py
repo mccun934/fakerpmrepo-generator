@@ -138,10 +138,11 @@ def generate_repo(output, number, size, multiples):
     os.system("mv ~/rpmbuild/RPMS/noarch/*elfake* %s" % output)
     os.system("createrepo %s" % output)
     os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (output,output))
+
     print "\n\n\n"
     print "==========================================================="
     print "Your new fake repo is available at: %s" % output
-    print "You may want to clean out your ~rpmbuild dir as well.\n"
+    print "You may want to clean out your $HOME/rpmbuild dir as well.\n"
 
 
 if __name__ == '__main__':
