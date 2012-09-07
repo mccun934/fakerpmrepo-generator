@@ -1,7 +1,7 @@
 fakerpmrepo-generator
 =====================
 
-Creates a set of RPM packages between 1-1000KB in size with random names and versions read in from /usr/share/dict/words
+Creates a set of RPM packages between 1-1000KB in size with random names and versions read in from a "dictionary" file.
 
 An example can be found at: http://mmccune.fedorapeople.org/random/
 
@@ -11,7 +11,7 @@ Each package installs the following files:
 /var/lib/<name>-dummy-data.dat
 /usr/sbin/<name> executable script, eg:
 
-for package rexline-5.7.9-1.elfake.noarch.rpm you get:
+For package rexline-5.7.9-1.elfake.noarch.rpm you get:
 
 $ rexline
 ====================================
@@ -25,34 +25,51 @@ Thank you for installing [rexline]
 
 Run the top level script:
 
-$ ./generate-repo.py --numpackages=10
-fungitoxicity
-8.5.5
-fungitoxicity-scratch/fungitoxicity-8.5.5
-317+0 records in
-317+0 records out
-324608 bytes (325 kB) copied, 0.0536074 s, 6.1 MB/s
-fungitoxicity-8.5.5/
-fungitoxicity-8.5.5/fungitoxicity-dummy-data
-toxicity-8.5.5/fungitoxicity-test-file.txt
-Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.vvNoit
-+ umask 022
-+ cd /home/mmccune/rpmbuild/BUILD
-...
+    $ ./generate-repo.py --number=10
+    Executing: $ ./generate-package.bash Denmark 4.4.6 75
+    Executing: $ ./generate-package.bash Iceland 4.7.3 35
+    Executing: $ ./generate-package.bash Cameroon 2.10.1 86
+    Executing: $ ./generate-package.bash Indonesia 10.9.7 72
+    Executing: $ ./generate-package.bash Mongolia 0.1.0 60
+    Executing: $ ./generate-package.bash Monaco 10.2.6 100
+    Executing: $ ./generate-package.bash Moldova 7.3.8 97
+    Executing: $ ./generate-package.bash Tanzania 7.9.7 53
+    Executing: $ ./generate-package.bash Chad 6.3.3 92
+    Executing: $ ./generate-package.bash EquatorialGuinea 5.0.6 75
+    Executing: $ ./generate-package.bash acme-package 1.0.1 1
+    Executing: $ ./generate-package.bash acme-package 1.0.2 1
+    Executing: $ ./generate-package.bash acme-package 1.1.2 1
+    Spawning worker 0 with 13 pkgs
+    Workers Finished
+    Gathering worker results
+
+    Saving Primary metadata
+    Saving file lists metadata
+    Saving other metadata
+    Generating sqlite DBs
+    Sqlite DBs complete
+    Wrote: /var/tmp/generated-repo/repodata/updateinfo.xml.xz
+               type = updateinfo
+           location = repodata/4ade90b07e0ce0471b412a3db19d90e27583337a019813e9a457921aaf791f02-updateinfo.xml.xz
+           checksum = 4ade90b07e0ce0471b412a3db19d90e27583337a019813e9a457921aaf791f02
+          timestamp = 1347059999.84
+      open-checksum = 63e1ea95e0722e1f9d7d93030fc59e4e972333562e268753121be3d70552f006
+    Wrote: /var/tmp/generated-repo/repodata/repomd.xml
+
+    ===========================================================
+    Your new fake repo is available at: /var/tmp/generated-repo
+    You may want to clean out your $HOME/rpmbuild dir as well.
+
 
 ===========================================================
 Your new fake repo is available at: /var/tmp/generated-repo
 
 $ ls /var/tmp/generated-repo/
-abstemious-10.2.0-1.elfake.noarch.rpm    kamahi-9.8.3-1.elfake.noarch.rpm        steadfast-4.7.6-1.elfake.noarch.rpm
-alimony-4.10.6-1.elfake.noarch.rpm       mammose-5.6.4-1.elfake.noarch.rpm       straight-shooting-8.2.5-1.elfake.noarch.rpm
-bodyplate-8.0.8-1.elfake.noarch.rpm      matthean-5.8.4-1.elfake.noarch.rpm      tattletale-6.7.8-1.elfake.noarch.rpm
-cherry-lipped-0.6.8-1.elfake.noarch.rpm  Meara-0.10.2-1.elfake.noarch.rpm        tawny-visaged-8.0.2-1.elfake.noarch.rpm
-chilicote-3.5.3-1.elfake.noarch.rpm      mouldiest-3.9.3-1.elfake.noarch.rpm     teagle-0.5.0-1.elfake.noarch.rpm
-Crescas-1.4.9-1.elfake.noarch.rpm        Parcel-greek-6.4.3-1.elfake.noarch.rpm  unascendent-1.1.10-1.elfake.noarch.rpm
-daggy-0.4.7-1.elfake.noarch.rpm          perilunes-3.5.2-1.elfake.noarch.rpm     ungranulated-4.7.7-1.elfake.noarch.rpm
-extrajudicial-6.4.7-1.elfake.noarch.rpm  Pro-teutonic-2.3.3-1.elfake.noarch.rpm  waged-10.8.3-1.elfake.noarch.rpm
-filose-0.1.2-1.elfake.noarch.rpm         raffinate-1.3.3-1.elfake.noarch.rpm     Werner-10.0.5-1.elfake.noarch.rpm
-gay-colored-1.3.1-1.elfake.noarch.rpm    rayah-5.6.0-1.elfake.noarch.rpm
-Hawkeye-10.0.8-1.elfake.noarch.rpm       repodata
-
+acme-package-1.0.1-1.elfake.noarch.rpm      Indonesia-10.9.7-1.elfake.noarch.rpm
+acme-package-1.0.2-1.elfake.noarch.rpm      Moldova-7.3.8-1.elfake.noarch.rpm
+acme-package-1.1.2-1.elfake.noarch.rpm      Monaco-10.2.6-1.elfake.noarch.rpm
+Cameroon-2.10.1-1.elfake.noarch.rpm         Mongolia-0.1.0-1.elfake.noarch.rpm
+Chad-6.3.3-1.elfake.noarch.rpm              repodata/
+Denmark-4.4.6-1.elfake.noarch.rpm           Tanzania-7.9.7-1.elfake.noarch.rpm
+EquatorialGuinea-5.0.6-1.elfake.noarch.rpm  updateinfo.xml
+Iceland-4.7.3-1.elfake.noarch.rpm
