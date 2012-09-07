@@ -30,13 +30,13 @@ def shell_exec(command):
         exit(process.returncode)
 
 
-def read_dictionary(wordsfile='words'):
+def read_dictionary(wordsfile):
     """
     Reads a plain text file of names, one per line, which will be used
     to generate the names of RPMs.
     """
     try:
-        fd = open(wordsfile)
+        fd = open(os.path.expanduser(wordsfile))
         wordslist = [word.replace(" ", "").strip() for word in fd.readlines()]
         fd.close()
     except Exception, e:
@@ -86,13 +86,13 @@ def uniquefy_package(package_names, max_size):
     return (package_name, version, size)
 
 
-def generate_repo(output, number, size, multiples):
+def generate_repo(output, number, size, multiples, dictionary):
     """
     """
     cleanup_directory(os.path.expanduser(output))
 
     # List of names for our packages
-    package_names = read_dictionary()
+    package_names = read_dictionary(dictionary)
 
     all_errata = ""
 
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
     description = "Generate a yum repository with fake packages and errata."
 
-    usage = "Usage: %prog [[OUTPUT] [NUMBER] [MULTIPLES] [SIZE]]"
+    usage = "Usage: %prog [[OUTPUT] [DICTIONARY] [NUMBER] [MULTIPLES] [SIZE]]"
     epilog = "Constructive comments and feedback can be sent to mmccune at redhat dot com" \
         " and omaciel at ogmaciel dot com."
     version = "%prog version 0.1"
@@ -162,6 +162,7 @@ if __name__ == '__main__':
         help="generate 0-3 random new versions of each package and errata",
         action="store_true", default=False)
     parser.add_option('-o', '--output',  dest='output', type="str", default='/var/tmp/generated-repo')
+    parser.add_option('-d', '--dictionary', dest='dictionary', type=str, default='words')
 
     (options, args) = parser.parse_args()
 
@@ -169,5 +170,6 @@ if __name__ == '__main__':
     number = options.number
     size = options.size
     multiples = options.multiples
+    dictionary = options.dictionary
 
-    generate_repo(output, number, size, multiples)
+    generate_repo(output, number, size, multiples, dictionary)
