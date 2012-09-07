@@ -149,7 +149,8 @@ if __name__ == '__main__':
     description = "Generate a yum repository with fake packages and errata."
 
     usage = "Usage: %prog [[OUTPUT] [NUMBER] [MULTIPLES] [SIZE]]"
-    epilog = "Constructive comments and feedback can be sent to omaciel at ogmaciel dot com."
+    epilog = "Constructive comments and feedback can be sent to mmccune at redhat dot com" \
+        " and omaciel at ogmaciel dot com."
     version = "%prog version 0.1"
 
     parser = OptionParser(usage=usage, description=description, epilog=epilog, version=version)
