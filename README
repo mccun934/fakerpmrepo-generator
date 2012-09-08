@@ -5,6 +5,11 @@ Introduction
 ------------
 Creates a set of RPM packages between 1-1000KB in size with random names and versions read in from a "dictionary" file.
 
+Requirements
+------------
+
+The command **rpmbuild** (sudo yum install rpm-build) is required.
+
 Examples
 --------
 An example can be found at: http://mmccune.fedorapeople.org/random/
