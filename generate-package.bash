@@ -27,11 +27,33 @@ dd if=/dev/urandom of=$SOURCES/$NAME-dummy-data.dat bs=1k count=$SIZE
 cat binary-template.ini | sed 's/%%NAME%%/'$NAME'/g' | sed 's/%%VERSION%%/'$VER'/g' > $SOURCES/$NAME
 chmod +x $SOURCES/$NAME
 
+# Create SPECS directory if it doesn't exists
+if [ ! -d ~/rpmbuild/SPECS ]; then
+    mkdir -p ~/rpmbuild/SPECS
+fi
+
 mv $NAME-scratch/$NAME.spec ~/rpmbuild/SPECS
+
+# Untar
 cd $NAME-scratch/
 tar czvf $NAME-$VER.tar.gz *
+
+# Create SOURCES directory if it doesn't exists
+if [ ! -d ~/rpmbuild/SOURCES ]; then
+    mkdir -p ~/rpmbuild/SOURCES
+fi
+
 mv $NAME-$VER.tar.gz ~/rpmbuild/SOURCES/
+
 cd ~/rpmbuild/SPECS
+
+# Check if rpmbuild is installed
+if [ ! -e /usr/bin/rpmbuild ]; then
+    echo "The rpm-build command was not found. Aborting."; exit 1;
+fi
+
 rpmbuild -bb $NAME.spec
 popd 
+
+# Cleanup
 rm -rf $NAME-scratch/
