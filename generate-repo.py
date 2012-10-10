@@ -162,7 +162,7 @@ if __name__ == '__main__':
         help="generate 0-3 random new versions of each package and errata",
         action="store_true", default=False)
     parser.add_option('-o', '--output',  dest='output', type="str", default='/var/tmp/generated-repo')
-    parser.add_option('-d', '--dictionary', dest='dictionary', type=str, default='words_animals.txt')
+    parser.add_option('-d', '--dictionary', dest='dictionary', type=str, default='words.txt')
 
     (options, args) = parser.parse_args()
 
