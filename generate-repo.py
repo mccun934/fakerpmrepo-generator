@@ -37,7 +37,7 @@ def read_dictionary(wordsfile):
     """
     try:
         fd = open(os.path.expanduser(wordsfile))
-        wordslist = [word.replace(" ", "").strip() for word in fd.readlines()]
+        wordslist = [(word.replace(" ", "").strip()).replace("-","") for word in fd.readlines()]
         fd.close()
     except Exception, e:
         print "Was not able to open the words file %s: %s" % (wordsfile, str(e))
