@@ -1,14 +1,14 @@
-<update from="errata@redhat.com" status="stable" type="security" version="1">
+<update from="errata@redhat.com" status="stable" type="%%TYPE%%" version="1">
   <id>%%ERRATAID%%</id>
   <title>%%NAME%%_Erratum</title>
   <release>%%REL%%</release>
-  <issued date="2012-01-27 16:08:09"/>
+  <issued date="%%DATE%%"/>
   <description>%%NAME%%_Erratum description</description>
   <pkglist>
     <collection short="">
       <name>1</name>
       <package arch="noarch" name="%%NAME%%" release="%%REL%%" src="http://www.fedoraproject.org" version="%%VER%%">
-        <filename>%%NAME%%-%%VER%%-%%REL%%.elfake.noarch.rpm</filename>
+        <filename>%%NAME%%-%%VER%%-%%REL%%.noarch.rpm</filename>
       </package>
     </collection>
   </pkglist>
