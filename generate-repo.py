@@ -19,7 +19,7 @@ def generate_errata(template, last_rev, name, version):
     errata = errata.replace("%%NAME%%", name)
     errata = errata.replace("%%VER%%", version)
     errata = errata.replace("%%TYPE%%", TYPES[random.randint(0,2)])
-    errata = errata.replace("%%DATE%%", datetime.date(2012, random.randint(1,12), random.randint(1,28)).strftime(FORMAT))
+    errata = errata.replace("%%DATE%%", datetime.date(datetime.date.today().year - 1, random.randint(1,12), random.randint(1,28)).strftime(FORMAT))
     return errata
   
   
