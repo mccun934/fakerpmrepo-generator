@@ -7,6 +7,10 @@ import random
 import os
 import shutil
 from optparse import OptionParser
+import datetime
+
+TYPES = ["security","bugfix","enhancement"]
+FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def generate_errata(template, last_rev, name, version):
     errata = template
@@ -14,6 +18,8 @@ def generate_errata(template, last_rev, name, version):
     errata = errata.replace("%%REL%%", str(last_rev))                
     errata = errata.replace("%%NAME%%", name)
     errata = errata.replace("%%VER%%", version)
+    errata = errata.replace("%%TYPE%%", TYPES[random.randint(0,2)])
+    errata = errata.replace("%%DATE%%", datetime.date(2012, random.randint(1,12), random.randint(1,28)).strftime(FORMAT))
     return errata
   
   
@@ -135,7 +141,7 @@ def generate_repo(output, number, size, multiples, dictionary):
         sys.exit(-1)
 
 
-    os.system("mv ~/rpmbuild/RPMS/noarch/*elfake* %s" % output)
+    os.system("mv ~/rpmbuild/RPMS/noarch/* %s" % output)
     os.system("createrepo %s" % output)
     os.system("modifyrepo %s/updateinfo.xml %s/repodata/" % (output,output))
 
@@ -149,7 +155,7 @@ if __name__ == '__main__':
 
     description = "Generate a yum repository with fake packages and errata."
 
-    usage = "Usage: %prog [[OUTPUT] [DICTIONARY] [NUMBER] [MULTIPLES] [SIZE]]"
+    usage = "Usage: %prog [[OUTPUT] [DICTIONARY] [NUMBER] [ERRATAS] [MULTIPLES] [SIZE]]"
     epilog = "Constructive comments and feedback can be sent to mmccune at redhat dot com" \
         " and omaciel at ogmaciel dot com."
     version = "%prog version 0.1"
