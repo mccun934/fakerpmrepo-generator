@@ -111,21 +111,21 @@ def generate_repo(output, number, size, multiples, dictionary):
         if multiples:
             # Counter to increment revision version
             last_rev = int(version[-1])
-            # Generate 0-3 newer versions of the package
-            for j in range(random.randint(0,3)):
+            # Generate 1-3 newer versions of the package
+            for j in range(random.randint(1,3)):
 
                 last_rev += 1
                 new_version = version[:-1] + str(last_rev)
                 shell_exec("./generate-package.bash %s %s %s" % (package_name, new_version, package_size))
-                # Generate some errata
-                all_errata += generate_errata(errata_template, last_rev, package_name, version)
+            # Generate some errata
+            all_errata += generate_errata(errata_template, "1", package_name, new_version)
                 
     # Generate one specific package name you know is always there with multiple revs
     shell_exec("./generate-package.bash acme-package 1.0.1 1")
     shell_exec("./generate-package.bash acme-package 1.0.2 1")
-    all_errata += generate_errata(errata_template, "1.0.1 ", "acme-package", "1.0.2")
+    all_errata += generate_errata(errata_template, "1", "acme-package", "1.0.2")
     shell_exec("./generate-package.bash acme-package 1.1.2 1")
-    all_errata += generate_errata(errata_template, "1.0.2 ", "acme-package", "1.1.2")
+    all_errata += generate_errata(errata_template, "1", "acme-package", "1.1.2")
     
     
     #bad string concats but I'm lazy                
