@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
     description = "Generate a yum repository with fake packages and errata."
 
-    usage = "Usage: %prog [[OUTPUT] [DICTIONARY] [NUMBER] [ERRATAS] [MULTIPLES] [SIZE]]"
+    usage = "Usage: %prog [[OUTPUT] [DICTIONARY] [NUMBER] [MULTIPLES] [SIZE]]"
     epilog = "Constructive comments and feedback can be sent to mmccune at redhat dot com" \
         " and omaciel at ogmaciel dot com."
     version = "%prog version 0.1"
