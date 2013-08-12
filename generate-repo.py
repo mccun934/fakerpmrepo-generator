@@ -13,7 +13,11 @@ import threading
 
 TYPES = ["security","bugfix","enhancement"]
 FORMAT = "%Y-%m-%d %H:%M:%S"
-ERRATA_TEMPLATE = open(os.path.join(os.path.dirname(__file__), "errata-template.xml")).read()
+try:
+    ERRATA_TEMPLATE = open(os.path.join(os.path.dirname(__file__), "errata-template.xml")).read()
+except Exception, e:
+    print "Was not able to open errata template file: %s" % str(e)
+    sys.exit(-1)
 
 jobs = Queue()
 all_errata = []
@@ -68,21 +72,6 @@ def cleanup_directory(outputdir):
     if os.path.isdir(outputdir):
         shutil.rmtree(outputdir)
     os.mkdir(outputdir)
-
-
-def read_template(template_path):
-    """
-    Returns 
-    """
-
-    try:
-        with open(template_path, "r") as fd:
-            template = fd.read()
-    except Exception, e:
-        print "Was not able to open errata template file: %s" % str(e)
-        sys.exit(-1)
-
-    return template
 
 
 def uniquefy_package(package_names, max_size):
